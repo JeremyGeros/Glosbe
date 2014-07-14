@@ -37,11 +37,13 @@ module Glosbe
       source_definitions = []
       coder = HTMLEntities.new
       response['tuc'].each do |tranlation_block|
-        tranlation_block['meanings'].each do |meaning|
-          if meaning['language'] == @options[:query][:dest]
-            target_definitions << coder.decode(meaning['text'])
-          else
-            source_definitions << coder.decode(meaning['text'])
+        if tranlation_block['meanings']
+          tranlation_block['meanings'].each do |meaning|
+            if meaning['language'] == @options[:query][:dest]
+              target_definitions << coder.decode(meaning['text'])
+            else
+              source_definitions << coder.decode(meaning['text'])
+            end
           end
         end
       end
