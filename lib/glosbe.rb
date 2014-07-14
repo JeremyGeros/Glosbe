@@ -3,8 +3,14 @@ require "httparty"
 module Glosbe
   class Translate
     include HTTParty
-    base_uri("http://glosbe.com/gapi/")
-    default_params('format': 'json')
+    base_uri 'glosbe.com/gapi'
+    default_params format: 'json'
+    debug_output $stderr
+
+    def initialize(from, dest='eng')
+      raise(MissingFromLanguage) if from.nil?
+      @options = { query: {from: from, dest: dest }}
+    end
     
     def self.Exception(*names)
       cl = Module === self ? self : Object
@@ -12,24 +18,35 @@ module Glosbe
     end
     
     Exception :TranslateServerIsDown, :InvalidResponse,
-              :MissingFromLanguage, :MissingToLanguage, :MissingPhraseLanguage 
+              :MissingFromLanguage, :MissingPhraseLanguage 
     
-    def self.translate(text, params={})
-      raise(MissingFromLanguage) if not params[:from].nil?
-      raise(MissingToLanguage) if not params[:to].nil?
-      raise(MissingPhraseLanguage) if not params[:phrase.nil?
+    def translate(phrase)
+      translate_and_definition(phrase)[:translated]
+    end
 
-      params[:format] = 'json'
+    def translate_and_definition(phrase)
+      raise(MissingPhraseLanguage) if phrase.nil?
+      @options[:query][:phrase] = phrase
 
-      response = self.class.get('/translate', params)
-      puts response
+      response = self.class.get('/translate', @options)
       response = (response && response.parsed_response) ? response.parsed_response : nil
-      puts response
 
       raise(TranslateServerIsDown) if (!response || response.empty?)
-      raise(InvalidResponse, response["SearchResponse"]) if not response["SearchResponse"]['Translation']['Results'][0]['TranslatedTerm']
+      raise(InvalidResponse) if response['tuc'].count < 1
+      first_tuc = response['tuc'][0]
+      meanings = first_tuc['meanings']
+      target_definitions = []
+      source_definitions = []
 
-      return to_text
+      meanings.each do |meaning|
+        if meaning['language'] == @options[:query][:dest]
+          target_definitions << meaning['text']
+        else
+          source_definitions << meaning['text']
+        end
+      end
+
+      {target_definitions: target_definitions, source_definitions: source_definitions, translated: first_tuc['phrase']['text']}
     end
     
   end
