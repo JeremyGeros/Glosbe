@@ -1,4 +1,5 @@
 require "httparty"
+require "htmlentities"
 
 module Glosbe
   class Translate
@@ -34,12 +35,13 @@ module Glosbe
 
       target_definitions = []
       source_definitions = []
+      coder = HTMLEntities.new
       response['tuc'].each do |tranlation_block|
         tranlation_block['meanings'].each do |meaning|
           if meaning['language'] == @options[:query][:dest]
-            target_definitions << meaning['text']
+            target_definitions << coder.decode(meaning['text'])
           else
-            source_definitions << meaning['text']
+            source_definitions << coder.decode(meaning['text'])
           end
         end
       end

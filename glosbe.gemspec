@@ -1,7 +1,7 @@
 require 'rubygems'
 spec = Gem::Specification.new do |s|
   s.name = 'glosbe'
-  s.version = '0.0.3'
+  s.version = '0.0.4'
   s.summary = "Ruby Client for the Glosbe Api"
   s.description = 'Can translated and provide definitions'
   s.files = Dir.glob("lib/**/**")
@@ -14,4 +14,5 @@ spec = Gem::Specification.new do |s|
   
   
   s.add_dependency 'httparty', '0.13.1'
+  s.add_dependency 'htmlentities', '4.3.2'
 end
