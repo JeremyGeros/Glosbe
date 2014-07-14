@@ -35,6 +35,7 @@ module Glosbe
 
       target_definitions = []
       source_definitions = []
+      translated = (response['tuc'].first && response[tuc].first['phrase']) ? response['tuc'].first['phrase']['text'] : nil
       coder = HTMLEntities.new
       response['tuc'].each do |tranlation_block|
         if tranlation_block['meanings']
@@ -48,7 +49,7 @@ module Glosbe
         end
       end
 
-      {target_definitions: target_definitions, source_definitions: source_definitions, translated: first_tuc['phrase']['text']}
+      {target_definitions: target_definitions, source_definitions: source_definitions, translated: translated}
     end
     
   end

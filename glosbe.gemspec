@@ -1,7 +1,7 @@
 require 'rubygems'
 spec = Gem::Specification.new do |s|
   s.name = 'glosbe'
-  s.version = '0.0.5'
+  s.version = '0.0.6'
   s.summary = "Ruby Client for the Glosbe Api"
   s.description = 'Can translated and provide definitions'
   s.files = Dir.glob("lib/**/**")
