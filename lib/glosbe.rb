@@ -5,7 +5,6 @@ module Glosbe
     include HTTParty
     base_uri 'glosbe.com/gapi'
     default_params format: 'json'
-    debug_output $stderr
 
     def initialize(from, dest='eng')
       raise(MissingFromLanguage) if from.nil?
