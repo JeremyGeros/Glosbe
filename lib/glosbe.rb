@@ -31,17 +31,16 @@ module Glosbe
       response = (response && response.parsed_response) ? response.parsed_response : nil
 
       raise(TranslateServerIsDown) if (!response || response.empty?)
-      raise(InvalidResponse) if response['tuc'].count < 1
-      first_tuc = response['tuc'][0]
-      meanings = first_tuc['meanings']
+
       target_definitions = []
       source_definitions = []
-
-      meanings.each do |meaning|
-        if meaning['language'] == @options[:query][:dest]
-          target_definitions << meaning['text']
-        else
-          source_definitions << meaning['text']
+      response['tuc'].each do |tranlation_block|
+        tranlation_block['meanings'].each do |meaning|
+          if meaning['language'] == @options[:query][:dest]
+            target_definitions << meaning['text']
+          else
+            source_definitions << meaning['text']
+          end
         end
       end
 
