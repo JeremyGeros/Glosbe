@@ -37,9 +37,9 @@ module Glosbe
       source_definitions = []
       translated = (response['tuc'].first && response['tuc'].first['phrase']) ? response['tuc'].first['phrase']['text'] : nil
       coder = HTMLEntities.new
-      response['tuc'].each do |tranlation_block|
-        next if tranlation_block['meanings'].nil? || translation_block['authors'].include?(1)
-        tranlation_block['meanings'].each do |meaning|
+      response['tuc'].each do |translation_block|
+        next if translation_block['meanings'].nil? || translation_block['authors'].include?(1)
+        translation_block['meanings'].each do |meaning|
           if meaning['language'] == @options[:query][:dest]
             target_definitions << coder.decode(meaning['text'])
           else
