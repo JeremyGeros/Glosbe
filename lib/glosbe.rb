@@ -38,13 +38,12 @@ module Glosbe
       translated = (response['tuc'].first && response['tuc'].first['phrase']) ? response['tuc'].first['phrase']['text'] : nil
       coder = HTMLEntities.new
       response['tuc'].each do |tranlation_block|
-        if tranlation_block['meanings']
-          tranlation_block['meanings'].each do |meaning|
-            if meaning['language'] == @options[:query][:dest]
-              target_definitions << coder.decode(meaning['text'])
-            else
-              source_definitions << coder.decode(meaning['text'])
-            end
+        next if tranlation_block['meanings'].nil? || translation_block['authors'].include?(1)
+        tranlation_block['meanings'].each do |meaning|
+          if meaning['language'] == @options[:query][:dest]
+            target_definitions << coder.decode(meaning['text'])
+          else
+            source_definitions << coder.decode(meaning['text'])
           end
         end
       end
