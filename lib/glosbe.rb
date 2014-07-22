@@ -18,7 +18,7 @@ module Glosbe
     end
     
     Exception :TranslateServerIsDown, :InvalidResponse,
-              :MissingFromLanguage, :MissingPhraseLanguage 
+              :MissingFromLanguage, :MissingPhraseLanguage, :IPBlocked
     
     def translate(phrase)
       translate_and_definition(phrase)[:translated]
@@ -32,10 +32,11 @@ module Glosbe
       response = (response && response.parsed_response) ? response.parsed_response : nil
 
       raise(TranslateServerIsDown) if (!response || response.empty?)
+      raise(IPBlocked) if (response['message'] && response['message'] == 'Too many queries, your IP has been blocked')
 
       target_definitions = []
       source_definitions = []
-      translated = (response['tuc'].first && response['tuc'].first['phrase']) ? response['tuc'].first['phrase']['text'] : nil
+      translated = (response['tuc'] && response['tuc'].first && response['tuc'].first['phrase']) ? response['tuc'].first['phrase']['text'] : nil
       coder = HTMLEntities.new
       response['tuc'].each do |translation_block|
         next if translation_block['meanings'].nil? || translation_block['authors'].include?(1)
